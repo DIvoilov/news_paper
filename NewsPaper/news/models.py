@@ -14,10 +14,12 @@ class Author(models.Model):
         for r in Post.objects.filter(author=self).values("rating"):
             self.rating += r.get('rating')
         self.save()
-
+    def __str__(self):
+        return f'{self.user.username}'
 class Category(models.Model):
     name = models.CharField(max_length=1000,unique=True)
-
+    def __str__(self):
+        return f'{self.name}'
 
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -37,6 +39,9 @@ class Post(models.Model):
 
     def preview(self):
         return self.text[:124]+'...'
+
+    def __str__(self):
+        return f'{self.preview()}'
 
 class PostCategoty(models.Model):
     type = models.ForeignKey(Category, on_delete=models.CASCADE)
