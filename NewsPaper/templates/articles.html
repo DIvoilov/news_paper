@@ -6,16 +6,17 @@ News
 {% endblock title %}
 
 {% block content %}
-<h1>Новости</h1>
+<h1>Статьи</h1>
 <h2>{% current_time '%b %d %Y' %}</h2>
-<h3> Всего новостей {{ news|length_type:"N"}}</h3>
+<h3> Всего статей {{ articles|length}}</h3>
 <form action="./search">
    <button>Поиск</button>
 </form>
 <form action="./create">
-   <button>Добавить новость</button>
+   <button>Добавить статью</button>
 </form>
-    {% if news%}
+</form>
+    {% if articles%}
         <table>
             <tr>
                 <td>
@@ -28,16 +29,16 @@ News
                     <h3>Текст</h3>
                 </td>
             </tr>
-            {%for new in news%}
+            {%for article in articles%}
                 <tr>
-                    <td> <a href = "{{new.id}}">{{new.title|censor}}</a></td>
-                    <td> {{new.date_add|date:'d.m.Y'}}</td>
-                    <td> {{new.text|truncatewords:20|censor}}</td>
+                    <td> <a href = "{{article.id}}">{{article.title|censor}}</a></td>
+                    <td> {{article.date_add|date:'d.m.Y'}}</td>
+                    <td> {{article.text|truncatewords:20|censor}}</td>
                 </tr>
             {%endfor%}
         </table>
     {%else%}
-        <h2>Новости не найдены</h2>
+        <h2>Статьи не найдены</h2>
     {%endif%}
     {# Добавляем пагинацию на страницу #}
 

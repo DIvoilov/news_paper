@@ -8,13 +8,13 @@ News
 {% block content %}
 <h1>Новости</h1>
 <h2>{% current_time '%b %d %Y' %}</h2>
-<h3> Всего новостей {{ news|length_type:"N"}}</h3>
-<form action="./search">
-   <button>Поиск</button>
+<h3> Всего новостей {{ news|length}}</h3>
+
+<form action="" method="get">
+    {{ filterset.form.as_p}}
+    <input type="submit" value="Найти" />
 </form>
-<form action="./create">
-   <button>Добавить новость</button>
-</form>
+
     {% if news%}
         <table>
             <tr>
@@ -29,16 +29,17 @@ News
                 </td>
             </tr>
             {%for new in news%}
-                <tr>
-                    <td> <a href = "{{new.id}}">{{new.title|censor}}</a></td>
-                    <td> {{new.date_add|date:'d.m.Y'}}</td>
-                    <td> {{new.text|truncatewords:20|censor}}</td>
-                </tr>
+            <tr>
+                <td> {{new.title|censor}}</td>
+                <td> {{new.date_add|date:'d.m.Y'}}</td>
+                <td> {{new.text|truncatewords:20|censor}}</td>
+            </tr>
             {%endfor%}
         </table>
     {%else%}
         <h2>Новости не найдены</h2>
     {%endif%}
+
     {# Добавляем пагинацию на страницу #}
 
     {# Информация о предыдущих страницах #}
