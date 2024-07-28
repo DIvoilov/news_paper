@@ -15,6 +15,9 @@ News
 <form action="./create">
    <button>Добавить статью</button>
 </form>
+{% if is_not_author %}
+<button> <a href="/news/upgrade/"> Хочу стать автором!</a> </button>
+{% endif %}
 </form>
     {% if articles%}
         <table>

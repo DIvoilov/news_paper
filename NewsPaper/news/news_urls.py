@@ -15,4 +15,5 @@ urlpatterns = [
     path('<int:pk>/edit', NewUpdate.as_view(), name='post_update'),
     path('<int:pk>/delete', NewDelete.as_view(), name='post_delete'),
     path('search/', NewListSearch.as_view(), name='news_search'),
+    path('upgrade/', upgrade_me, name = 'upgrade')
 ]

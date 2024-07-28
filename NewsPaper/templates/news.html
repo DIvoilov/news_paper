@@ -15,6 +15,10 @@ News
 <form action="./create">
    <button>Добавить новость</button>
 </form>
+
+{% if is_not_author %}
+<button> <a href="/news/upgrade/"> Хочу стать автором!</a> </button>
+{% endif %}
     {% if news%}
         <table>
             <tr>

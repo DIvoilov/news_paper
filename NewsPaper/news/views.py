@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from django.views.generic import *
+from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from .models import *
 from .filters import *
 from .forms import PostForm
 from django.urls import reverse_lazy
-
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # Create your views here.
 class NewList(ListView):
@@ -20,6 +24,7 @@ class NewList(ListView):
         context['time_now'] = datetime.now()
         context['next_new'] = None
         context['filterset'] = self.filterset
+        context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
     def get_queryset(self):
@@ -40,6 +45,7 @@ class ArticleList(ListView):
         context['time_now'] = datetime.now()
         context['next_new'] = None
         context['filterset'] = self.filterset
+        context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
     def get_queryset(self):
@@ -98,7 +104,8 @@ class ArticleDetail(PostDetail):
     queryset = Post.objects.filter(type="A")
 
 
-class NewCreate(CreateView):
+class NewCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     form_class = PostForm
     model = Post
     template_name = 'new_edit.html'
@@ -109,7 +116,8 @@ class NewCreate(CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreate(CreateView):
+class ArticleCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     form_class = PostForm
     model = Post
     template_name = 'article_edit.html'
@@ -120,22 +128,35 @@ class ArticleCreate(CreateView):
         return super().form_valid(form)
 
 
-class NewUpdate(UpdateView):
+class NewUpdate(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     form_class = PostForm
     model = Post
     template_name = 'new_edit.html'
 
-class ArticleUpdate(UpdateView):
+
+class ArticleUpdate(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     form_class = PostForm
     model = Post
     template_name = 'article_edit.html'
+
 
 class NewDelete(DeleteView):
     model = Post
     template_name = 'new_delete.html'
     success_url = reverse_lazy('news_list')
 
+
 class ArticleDelete(DeleteView):
     model = Post
     template_name = 'article_delete.html'
     success_url = reverse_lazy('articles_list')
+
+@login_required
+def upgrade_me(request):
+    user = request.user
+    premium_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        premium_group.user_set.add(user)
+    return redirect('/articles/')
